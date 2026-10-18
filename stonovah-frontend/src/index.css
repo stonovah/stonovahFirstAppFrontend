@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-yellow: #D9A006; /* Darker, high-contrast gold/yellow background */
+  --color-brand-red: #C0201E;    /* Primary brand red */
+  --color-brand-black: #0A0A0A;  /* Primary brand black */
+  --color-brand-card: #141414;   /* Surface card color */
+  --color-brand-border: #262626; /* Dark border color */
+}
+
+body {
+  background-color: var(--color-brand-yellow);
+  color: #0A0A0A;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
