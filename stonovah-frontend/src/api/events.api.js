@@ -11,6 +11,6 @@ export async function fetchPublicEventBySlug(slug) {
 }
 
 export async function fetchPastEvents(filters = {}) {
-  const { data } = await apiClient.get('/events/past', { params: filters });
+  const { data } = await apiClient.get('/events/past-events', { params: filters });
   return data.data;
 }
