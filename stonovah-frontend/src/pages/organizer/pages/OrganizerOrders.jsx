@@ -176,13 +176,13 @@ export default function OrganizerOrders() {
             <table className="w-full text-xs min-w-[860px]">
               <thead><tr className="text-[9px] text-neutral-500 text-left bg-neutral-950"><th className="p-4">ORDER & DATE</th><th>BUYER</th><th>EVENT & TICKETS</th><th>QTY</th><th>AMOUNT</th><th>STATUS</th></tr></thead>
               <tbody>
-                {rows.map((o, i) => {
+                {rows?.map((o, i) => {
                   const st = stateOf(o);
                   return (
                     <motion.tr key={o.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} onClick={() => setOpen(o.id)} className="border-t border-neutral-800 hover:bg-neutral-900 transition cursor-pointer">
                       <td className="p-4"><b className="font-sans text-sm block">{String(o.id).slice(-8).toUpperCase()}</b><span className="text-[10px] text-neutral-400">{ago(o.createdAt)}</span></td>
                       <td><b className="block">{o.buyerName}</b><span className="text-[10px] text-neutral-400">{o.buyerEmail}</span></td>
-                      <td className="max-w-[260px]"><b className="block truncate">{o.event.title}</b><span className="text-[10px] text-neutral-400 truncate block">{o.items.map((i) => i.tierName).join(', ')}</span></td>
+                      <td className="max-w-[260px]"><b className="block truncate">{o.event.title}</b><span className="text-[10px] text-neutral-400 truncate block">{o?.items?.map((i) => i.tierName).join(', ')}</span></td>
                       <td>{o.quantity}</td>
                       <td className="font-bold">{o.totalAmount ? money(o.totalAmount) : 'Free'}</td>
                       <td><Pill tone={st.tone}>{st.label}</Pill></td>
@@ -199,12 +199,12 @@ export default function OrganizerOrders() {
                   const st = TICKET_STATE[a.status] || TICKET_STATE.VALID;
                   return (
                     <motion.tr key={a.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="border-t border-neutral-800 hover:bg-neutral-900 transition">
-                      <td className="p-4"><b className="font-sans text-sm block">{a.order.buyerName}</b><span className="text-[10px] text-neutral-400 truncate block max-w-[220px]">{a.event.title}</span></td>
-                      <td className="text-neutral-300">{a.order.buyerEmail}</td>
-                      <td><Pill>{a.tier.name}</Pill></td>
-                      <td className="font-mono text-[#FFBF00]">{a.ticketCode}</td>
-                      <td className="text-neutral-400 font-mono">{String(a.orderId).slice(-8).toUpperCase()}</td>
-                      <td className={st.cls}>{st.label}{a.status === 'USED' && a.checkedInAt ? ` • ${new Date(a.checkedInAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}` : ''}</td>
+                      <td className="p-4"><b className="font-sans text-sm block">{a.order?.buyerName}</b><span className="text-[10px] text-neutral-400 truncate block max-w-[220px]">{a.event.title}</span></td>
+                      <td className="text-neutral-300">{a.order?.buyerEmail}</td>
+                      <td><Pill>{a?.tier?.name}</Pill></td>
+                      <td className="font-mono text-[#FFBF00]">{a?.ticketCode}</td>
+                      <td className="text-neutral-400 font-mono">{String(a?.orderId).slice(-8).toUpperCase()}</td>
+                      <td className={st?.cls}>{st?.label}{a.status === 'USED' && a?.checkedInAt ? ` • ${new Date(a.checkedInAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}` : ''}</td>
                     </motion.tr>
                   );
                 })}

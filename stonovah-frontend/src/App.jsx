@@ -49,11 +49,13 @@ import Orders from './pages/admin/pages/Orders';
 import Settings from './pages/admin/pages/Settings';
 import Portfolio from './pages/Portfolio';
 import PortfolioDetail from './pages/PortfolioDetail';
+import ScrollToTop from './components/ScrollToTop';
 
 
 export default function App() {
   return (
     <Router>
+      <ScrollToTop/>
       <AuthProvider>
       {/* Global Toast Provider */}
       <Toaster

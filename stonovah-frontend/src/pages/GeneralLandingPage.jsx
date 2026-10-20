@@ -54,7 +54,7 @@ export default function GeneralLandingPage() {
     },
     {
       code: '07 / EDU',
-      title: 'COURSES',
+      title: 'LEARNING',
       tag: 'ACADEMY & TRAINING',
       desc: 'Technical masterclasses in broadcast engineering, stage design, music business, and media logistics led by industry veterans.',
       link: '#'

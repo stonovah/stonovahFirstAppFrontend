@@ -251,13 +251,13 @@ export default function EventLandingPageContent() {
         {loading && <p className="text-xs font-mono font-bold text-black/70 uppercase">Loading events…</p>}
         {error && <p className="text-xs font-mono font-bold text-red-800">{error}</p>}
 
-        <motion.div layout initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-50px' }} variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEvents.map((ev) => {
             const f = eventFacts(ev);
             const canBuy = !f.soldOut && !f.ended;
             const badge = f.soldOut ? 'SOLD OUT' : f.almost ? 'ALMOST SOLD OUT' : 'ON SALE';
             return (
-              <motion.div layout key={ev.id} variants={fadeInUp} whileHover={{ y: -6 }} className="bg-black text-white rounded-xl border border-black overflow-hidden flex flex-col justify-between group transition duration-300 shadow-xl">
+              <motion.div key={ev.id} variants={fadeInUp} initial="hidden" animate="visible" whileHover={{ y: -6 }} className="bg-black text-white rounded-xl border border-black overflow-hidden flex flex-col justify-between group transition duration-300 shadow-xl">
                 <div>
                   <Link to={`/events/${ev.slug}`} className="block h-48 relative overflow-hidden bg-neutral-900">
                     {ev.posterUrl ? <img src={ev.posterUrl} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" /> : <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-red-950" />}

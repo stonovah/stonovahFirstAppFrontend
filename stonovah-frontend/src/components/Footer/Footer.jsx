@@ -21,7 +21,7 @@ export default function Footer() {
               <li key={t}><a href="/#arms" className="hover:text-white">{t}</a></li>
             ))}
             <li><Link to="/events" className="hover:text-white">06 // Events</Link></li>
-            <li><a href="/#arms" className="hover:text-white">07 // Courses</a></li>
+            <li><a href="/#arms" className="hover:text-white">07 // Learning</a></li>
           </ul>
         </div>
 

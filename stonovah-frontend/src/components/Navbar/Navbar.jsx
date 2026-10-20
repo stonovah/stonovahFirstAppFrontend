@@ -13,7 +13,7 @@ const navLinks = [
   { name: 'DISTRIBUTION', href: '/#arms' },
   { name: 'PUBLISHING', href: '/#arms' },
   { name: 'EVENTS', to: '/events' },
-  { name: 'COURSES', href: '/#arms' },
+  { name: 'LEARNING', href: '/#arms' },
   { name: 'CONTACT', to: '/request-service' },
 ];
 
