@@ -7,7 +7,7 @@ export const setAccessToken = (t) => { accessToken = t; };
 export const setAuthFailureHandler = (fn) => { onAuthFailure = fn; };
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000',
+  baseURL: import.meta.env.VITE_API_URL || 'https://stonovah-api-staging.onrender.com',
   withCredentials: true, // sends/receives the refreshToken cookie
 });
 
