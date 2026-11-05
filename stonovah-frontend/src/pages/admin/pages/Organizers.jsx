@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { FiDownload, FiSearch, FiUsers, FiCheckCircle, FiFileText, FiSlash, FiRefreshCw } from 'react-icons/fi';
 import { Card, Pill, Btn, PageHeader, CountUp } from '../ui';
-import { Avatar, Pagination } from '../ui2';
+import { Avatar, Pagination, Select } from '../ui2';
 import { downloadCsv } from '../adminData';
 import { adminApi } from '../../../api/admin';
 import { apiErrorMessage } from '../../../api/apiClient';
@@ -64,9 +64,34 @@ export default function Organizers() {
       <Card className="p-4 flex flex-col lg:flex-row gap-3">
         <div className="relative flex-1"><FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, email or CAC number…" className={`${sel} w-full pl-9`} /></div>
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className={sel}><option value="">Account: All</option>{Object.entries(ORG_STATUS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select>
-        <select value={kyc} onChange={(e) => setKyc(e.target.value)} className={sel}><option value="">KYC: All</option>{Object.entries(KYC).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select>
-        <select value={type} onChange={(e) => setType(e.target.value)} className={sel}><option value="">Type: All</option><option value="BUSINESS">Business (CAC)</option><option value="INDIVIDUAL">Individual (NIN)</option></select>
+        <Select
+          className="w-44"
+          value={status}
+          onChange={setStatus}
+          options={[
+            { value: '', label: 'Account: All' },
+            ...Object.entries(ORG_STATUS).map(([k, v]) => ({ value: k, label: v.label })),
+          ]}
+        />
+        <Select
+          className="w-40"
+          value={kyc}
+          onChange={setKyc}
+          options={[
+            { value: '', label: 'KYC: All' },
+            ...Object.entries(KYC).map(([k, v]) => ({ value: k, label: v.label })),
+          ]}
+        />
+        <Select
+          className="w-48"
+          value={type}
+          onChange={setType}
+          options={[
+            { value: '', label: 'Type: All' },
+            { value: 'BUSINESS', label: 'Business (CAC)' },
+            { value: 'INDIVIDUAL', label: 'Individual (NIN)' },
+          ]}
+        />
         <button type="button" onClick={() => { setQ(''); setStatus(''); setType(''); setKyc(''); }} aria-label="Clear filters" className="w-10 h-10 bg-neutral-900 hover:bg-neutral-800 rounded-lg flex items-center justify-center cursor-pointer"><FiRefreshCw /></button>
       </Card>
 

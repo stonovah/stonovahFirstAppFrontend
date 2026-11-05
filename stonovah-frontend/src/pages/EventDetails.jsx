@@ -11,6 +11,9 @@ import { usePublicEvent, eventFacts, fmtDay, fmtTime, startCheckout } from './pu
 
 const fadeInUp = { hidden: { opacity: 0, y: 25 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1.0] } } };
 
+const mono = 'font-mono text-[10px] font-bold uppercase tracking-[0.18em]';
+const card = 'rounded-xl border border-white/[0.07] bg-[#161616]';
+
 const icsStamp = (d) => new Date(d).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 const icsText = (s = '') => String(s).replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/([,;])/g, '\\$1');
 
@@ -39,11 +42,18 @@ async function share(e) {
 }
 
 const Shell = ({ children }) => (
-  <main className="min-h-screen bg-[#FFBF00] text-[#111111] font-sans antialiased selection:bg-[#E50914] selection:text-white">
+  <main className="min-h-screen bg-[#0a0a0a] font-sans text-white antialiased selection:bg-red-600 selection:text-white">
     <Navbar />
     {children}
     <Footer />
   </main>
+);
+
+const Eyebrow = ({ children }) => (
+  <p className={`flex items-center gap-2 ${mono} text-red-500`}>
+    <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+    {children}
+  </p>
 );
 
 export default function EventDetailPage() {
@@ -53,15 +63,25 @@ export default function EventDetailPage() {
 
   useEffect(() => { if (e) document.title = `${e.title} | Stonovah`; }, [e]);
 
-  if (loading) return <Shell><p className="max-w-7xl mx-auto px-6 py-20 font-mono text-xs font-bold">LOADING EVENT…</p></Shell>;
+  if (loading) {
+    return (
+      <Shell>
+        <p className={`${mono} mx-auto max-w-7xl px-5 py-24 text-center text-white/40`}>Loading event…</p>
+      </Shell>
+    );
+  }
   if (notFound || error || !e) {
     return (
       <Shell>
-        <div className="max-w-xl mx-auto px-6 py-20">
-          <div className="bg-[#111111] text-white p-8 rounded-2xl text-center space-y-3">
-            <h1 className="text-2xl font-black uppercase">{notFound ? 'Event not found' : 'Something went wrong'}</h1>
-            <p className="text-xs text-neutral-400">{notFound ? 'This event may have ended or is no longer on sale.' : error}</p>
-            <Link to="/events" className="inline-block text-[#FFBF00] text-xs font-bold hover:underline">Browse all events</Link>
+        <div className="mx-auto max-w-xl px-5 py-24">
+          <div className="flex flex-col items-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-6 py-14 text-center">
+            <h1 className="text-xl font-bold">{notFound ? 'Event not found' : 'Something went wrong'}</h1>
+            <p className="mt-2 max-w-sm text-xs leading-relaxed text-white/50">
+              {notFound ? 'This event may have ended or is no longer on sale.' : error}
+            </p>
+            <Link to="/events" className="mt-6 inline-flex items-center gap-2 rounded-md bg-[#e10613] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#c40510]">
+              Browse all events
+            </Link>
           </div>
         </div>
       </Shell>
@@ -76,112 +96,147 @@ export default function EventDetailPage() {
 
   return (
     <Shell>
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <Link to="/events" className="inline-flex items-center gap-2 text-xs font-mono font-bold hover:underline mb-6"><FiArrowLeft /> All events</Link>
+      {/* top glow */}
+      <div className="bg-[radial-gradient(ellipse_at_top_left,rgba(225,6,19,0.14),transparent_50%)]">
+        <div className="mx-auto max-w-7xl px-5 py-10">
+          <Link to="/events" className={`${mono} mb-6 inline-flex items-center gap-2 text-white/50 transition-colors hover:text-white`}>
+            <FiArrowLeft /> All events
+          </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          <div className="lg:col-span-8 space-y-10">
-            <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="bg-[#111111] p-3 rounded-2xl border border-black/20 shadow-2xl">
-              <div className="relative rounded-xl overflow-hidden bg-neutral-900 aspect-[16/9]">
-                {e.posterUrl
-                  ? <img src={e.posterUrl} alt={e.title} className="w-full h-full object-cover" />
-                  : <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-red-950" />}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                {badges.length > 0 && (
-                  <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                    {badges.map((b) => <span key={b} className="bg-[#111111]/90 backdrop-blur text-white text-[9px] font-mono font-bold px-2.5 py-1 rounded border border-neutral-700 uppercase">{b}</span>)}
-                  </div>
-                )}
-              </div>
-            </motion.div>
-
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className="space-y-6">
-              <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tight leading-[0.95] break-words">{e.title}</h1>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="bg-[#111111] text-white p-4 rounded-xl flex items-start gap-3">
-                  <FiCalendar className="text-[#E50914] text-lg mt-0.5 shrink-0" />
-                  <div><span className="text-[9px] font-mono text-neutral-400 block uppercase">DATE & TIME</span>
-                    <span className="text-xs font-bold block mt-0.5">{fmtDay(e.startAt)}</span>
-                    <span className="text-[10px] text-neutral-400 block mt-0.5">{fmtTime(e.startAt)}{e.endAt ? ` – ${fmtTime(e.endAt)}` : ''} (Lagos time)</span></div>
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+            <div className="space-y-8 lg:col-span-8">
+              {/* poster */}
+              <motion.div initial="hidden" animate="visible" variants={fadeInUp} className={`${card} p-2`}>
+                <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-[linear-gradient(135deg,#2a0508,#0f0f0f_70%)]">
+                  {e.posterUrl && <img src={e.posterUrl} alt={e.title} className="h-full w-full object-cover" />}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  {badges.length > 0 && (
+                    <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                      {badges.map((b) => (
+                        <span
+                          key={b}
+                          className={`inline-block rounded px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] backdrop-blur ${b === 'HOSTED BY STONOVAH' ? 'bg-[#e10613] text-white' : 'bg-black/70 text-white/80'}`}
+                        >
+                          {b}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <a href={map} target="_blank" rel="noreferrer" className="bg-[#111111] text-white p-4 rounded-xl flex items-start gap-3 hover:ring-2 hover:ring-[#FFBF00] transition">
-                  <FiMapPin className="text-[#FFBF00] text-lg mt-0.5 shrink-0" />
-                  <div><span className="text-[9px] font-mono text-neutral-400 block uppercase">VENUE (OPEN MAP)</span>
-                    <span className="text-xs font-bold block mt-0.5">{e.venue}</span>
-                    {e.venueAddress && <span className="text-[10px] text-neutral-400 block mt-0.5">{e.venueAddress}</span>}</div>
-                </a>
-                <div className="bg-[#111111] text-white p-4 rounded-xl flex items-start gap-3">
-                  <FiTag className="text-emerald-400 text-lg mt-0.5 shrink-0" />
-                  <div><span className="text-[9px] font-mono text-neutral-400 block uppercase">ORGANIZED BY</span>
-                    <span className="text-xs font-bold block mt-0.5">{o?.name || 'Stonovah'}</span>
-                    {f.capacity > 0 && <span className="text-[10px] text-neutral-400 block mt-0.5">{f.left.toLocaleString()} of {f.capacity.toLocaleString()} tickets left</span>}</div>
-                </div>
-              </div>
+              </motion.div>
 
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#111111]/20">
-                <button type="button" onClick={() => downloadCalendar(e)} className="bg-[#111111] text-white text-xs font-mono font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 hover:bg-black transition cursor-pointer"><FiCalendar /> Add to Calendar</button>
-                <button type="button" onClick={() => share(e)} aria-label="Share this event" className="bg-[#111111] text-white text-xs font-mono font-bold px-3 py-2 rounded-lg hover:bg-black transition cursor-pointer"><FiShare2 /></button>
-              </div>
-            </motion.div>
+              {/* title + facts */}
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className="space-y-6">
+                <Eyebrow>Event details</Eyebrow>
+                <h1 className="break-words text-4xl font-black uppercase leading-[0.95] tracking-tight sm:text-6xl">{e.title}</h1>
 
-            {e.description && (
-              <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className="bg-[#111111] text-white p-8 rounded-2xl shadow-2xl space-y-3">
-                <span className="text-[10px] font-mono font-bold text-[#E50914] uppercase tracking-widest block">ABOUT THIS EVENT</span>
-                <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed whitespace-pre-line">{e.description}</p>
-              </motion.section>
-            )}
-
-            {o && (
-              <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className="bg-[#111111] text-white p-8 rounded-2xl shadow-2xl space-y-4">
-                <span className="text-[10px] font-mono font-bold text-[#E50914] uppercase tracking-widest block">THE ORGANIZER</span>
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-xl bg-neutral-900 border border-neutral-800 overflow-hidden shrink-0 flex items-center justify-center text-xl font-black text-[#FFBF00]">
-                    {o.logoUrl ? <img src={o.logoUrl} alt={o.name} className="w-full h-full object-cover" /> : (o.name || '?').slice(0, 1).toUpperCase()}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div className={`${card} flex items-start gap-3 p-4`}>
+                    <FiCalendar className="mt-0.5 shrink-0 text-lg text-red-500" />
+                    <div>
+                      <span className={`${mono} block text-[9px] text-white/40`}>Date & time</span>
+                      <span className="mt-1 block text-xs font-bold">{fmtDay(e.startAt)}</span>
+                      <span className="mt-0.5 block text-[10px] text-white/45">{fmtTime(e.startAt)}{e.endAt ? ` – ${fmtTime(e.endAt)}` : ''} (Lagos time)</span>
+                    </div>
                   </div>
-                  <div className="min-w-0 space-y-2">
-                    <h3 className="text-lg font-black uppercase">{o.name}</h3>
-                    {o.about && <p className="text-xs text-neutral-300 leading-relaxed whitespace-pre-line">{o.about}</p>}
-                    <div className="flex flex-wrap gap-x-5 gap-y-1 text-[11px] font-mono text-neutral-400">
-                      {site && <a href={site} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-[#FFBF00]"><FiGlobe /> Website</a>}
-                      {o.email && <a href={`mailto:${o.email}`} className="flex items-center gap-1.5 hover:text-[#FFBF00]"><FiMail /> {o.email}</a>}
-                      {o.phone && <a href={`tel:${o.phone.replace(/\s/g, '')}`} className="flex items-center gap-1.5 hover:text-[#FFBF00]"><FiPhone /> {o.phone}</a>}
+                  <a href={map} target="_blank" rel="noreferrer" className={`${card} flex items-start gap-3 p-4 transition-colors hover:border-white/25`}>
+                    <FiMapPin className="mt-0.5 shrink-0 text-lg text-red-500" />
+                    <div>
+                      <span className={`${mono} block text-[9px] text-white/40`}>Venue (open map)</span>
+                      <span className="mt-1 block text-xs font-bold">{e.venue}</span>
+                      {e.venueAddress && <span className="mt-0.5 block text-[10px] text-white/45">{e.venueAddress}</span>}
+                    </div>
+                  </a>
+                  <div className={`${card} flex items-start gap-3 p-4`}>
+                    <FiTag className="mt-0.5 shrink-0 text-lg text-red-500" />
+                    <div>
+                      <span className={`${mono} block text-[9px] text-white/40`}>Organized by</span>
+                      <span className="mt-1 block text-xs font-bold">{o?.name || 'Stonovah'}</span>
+                      {f.capacity > 0 && <span className="mt-0.5 block text-[10px] text-white/45">{f.left.toLocaleString()} of {f.capacity.toLocaleString()} tickets left</span>}
                     </div>
                   </div>
                 </div>
-              </motion.section>
-            )}
 
-            <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className="bg-[#111111] text-white p-8 rounded-2xl shadow-2xl space-y-5">
-              <span className="text-[10px] font-mono font-bold text-[#E50914] uppercase tracking-widest block">HOW YOUR TICKETS WORK</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {[
-                  ['Pick your tickets', 'Choose how many of each ticket type you want, then continue to checkout.'],
-                  ['Pay securely', 'Payments are processed by Paystack. Free tickets skip payment.'],
-                  ['Get them by email', 'Your tickets arrive as a PDF at the email address you enter at checkout.'],
-                  ['Show your QR at the gate', 'Every ticket has its own QR code and can be used once. Bring it on your phone or printed.'],
-                ].map(([t, d]) => (
-                  <div key={t} className="flex items-start gap-3">
-                    <div className="p-2 rounded bg-[#1E1E1E] text-[#FFBF00] border border-neutral-800 mt-0.5"><FiCheckCircle /></div>
-                    <div><h4 className="text-xs font-bold uppercase">{t}</h4><p className="text-[11px] text-neutral-400 mt-0.5 leading-relaxed">{d}</p></div>
-                  </div>
-                ))}
-              </div>
-            </motion.section>
-          </div>
-
-          <div className="lg:col-span-4">
-            <div className="sticky top-20 space-y-6" id="tickets">
-              <motion.div initial={{ opacity: 0, x: 25 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="bg-[#111111] text-white p-6 rounded-2xl border-2 border-black/20 shadow-2xl space-y-5">
-                <div className="border-b border-neutral-800 pb-4">
-                  <span className="text-[9px] font-mono text-neutral-400 uppercase block">TICKETS</span>
-                  <h2 className="text-xl font-black uppercase">Select Tickets</h2>
-                </div>
-                <TicketPicker event={e} ended={f.ended} onContinue={(items) => startCheckout(navigate, e, items)} />
-                <div className="flex items-center justify-center gap-1.5 text-[9px] font-mono text-neutral-400 pt-3 border-t border-neutral-800">
-                  <FiShield className="text-[#FFBF00]" /> Secure checkout with Paystack
+                <div className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-5">
+                  <button type="button" onClick={() => downloadCalendar(e)} className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-white/[0.07] px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-white/[0.12]">
+                    <FiCalendar /> Add to calendar
+                  </button>
+                  <button type="button" onClick={() => share(e)} aria-label="Share this event" className="cursor-pointer rounded-md bg-white/[0.07] px-3.5 py-2.5 text-white transition-colors hover:bg-white/[0.12]">
+                    <FiShare2 />
+                  </button>
                 </div>
               </motion.div>
+
+              {/* about */}
+              {e.description && (
+                <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className={`${card} space-y-3 p-8`}>
+                  <Eyebrow>About this event</Eyebrow>
+                  <p className="whitespace-pre-line text-sm leading-relaxed text-white/65">{e.description}</p>
+                </motion.section>
+              )}
+
+              {/* organizer */}
+              {o && (
+                <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className={`${card} space-y-4 p-8`}>
+                  <Eyebrow>The organizer</Eyebrow>
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] text-xl font-black text-red-500">
+                      {o.logoUrl ? <img src={o.logoUrl} alt={o.name} className="h-full w-full object-cover" /> : (o.name || '?').slice(0, 1).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 space-y-2">
+                      <h3 className="text-lg font-bold">{o.name}</h3>
+                      {o.about && <p className="whitespace-pre-line text-xs leading-relaxed text-white/60">{o.about}</p>}
+                      <div className="flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] text-white/50">
+                        {site && <a href={site} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white"><FiGlobe className="text-red-500" /> Website</a>}
+                        {o.email && <a href={`mailto:${o.email}`} className="flex items-center gap-1.5 hover:text-white"><FiMail className="text-red-500" /> {o.email}</a>}
+                        {o.phone && <a href={`tel:${o.phone.replace(/\s/g, '')}`} className="flex items-center gap-1.5 hover:text-white"><FiPhone className="text-red-500" /> {o.phone}</a>}
+                      </div>
+                    </div>
+                  </div>
+                </motion.section>
+              )}
+
+              {/* how tickets work */}
+              <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className={`${card} space-y-5 p-8`}>
+                <Eyebrow>How your tickets work</Eyebrow>
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                  {[
+                    ['Pick your tickets', 'Choose how many of each ticket type you want, then continue to checkout.'],
+                    ['Pay securely', 'Payments are processed by Paystack. Free tickets skip payment.'],
+                    ['Get them by email', 'Your tickets arrive as a PDF at the email address you enter at checkout.'],
+                    ['Show your QR at the gate', 'Every ticket has its own QR code and can be used once. Bring it on your phone or printed.'],
+                  ].map(([t, d]) => (
+                    <div key={t} className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-red-500"><FiCheckCircle /></span>
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wide">{t}</h4>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-white/50">{d}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.section>
+            </div>
+
+            {/* ticket sidebar */}
+            <div className="lg:col-span-4">
+              <div className="sticky top-20 space-y-6" id="tickets">
+                <motion.div
+                  initial={{ opacity: 0, x: 25 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="space-y-5 rounded-xl border border-white/[0.07] bg-[radial-gradient(ellipse_at_top_right,rgba(225,6,19,0.14),#161616_60%)] p-6"
+                >
+                  <div className="border-b border-white/10 pb-4">
+                    <span className={`${mono} block text-[9px] text-red-400`}>Tickets</span>
+                    <h2 className="mt-1 text-xl font-black uppercase">Select tickets</h2>
+                  </div>
+                  <TicketPicker event={e} ended={f.ended} onContinue={(items) => startCheckout(navigate, e, items)} />
+                  <div className="flex items-center justify-center gap-1.5 border-t border-white/10 pt-3 font-mono text-[9px] text-white/45">
+                    <FiShield className="text-red-500" /> Secure checkout with Paystack
+                  </div>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>

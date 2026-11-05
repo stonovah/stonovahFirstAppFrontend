@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { FiArrowRight, FiCheck } from 'react-icons/fi';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
-import { Field, Step, Chip, AttachmentPicker, RequestSuccess, useRequestSubmit, emailOk, today, inputCls } from '../components/forms/RequestForm';
+import { AttachmentPicker, RequestSuccess, useRequestSubmit, emailOk, today } from '../components/forms/RequestForm';
 
 const SERVICES = [
   ['coordination', 'Event Coordination', 'Stage logistics, show directors, stage management and crew.'],
@@ -16,6 +16,48 @@ const SERVICES = [
 const CATEGORIES = ['Live concert / festival', 'Corporate keynote / summit', 'Cultural awards & gala', 'Virtual stream / studio', 'Other'];
 const BUDGETS = ['$25,000 – $50,000 USD', '$50,000 – $150,000 USD', '$150,000 – $500,000 USD', '$500,000+ USD', 'Not sure yet'];
 const empty = { services: [], name: '', email: '', phone: '', org: '', title: '', category: '', date: '', location: '', audience: '', budget: '', brief: '' };
+
+const mono = 'font-mono text-[10px] font-bold uppercase tracking-[0.18em]';
+
+// Local dark-styled form pieces (the shared ones in RequestForm are styled for the old yellow theme).
+const inputCls =
+  'w-full rounded-lg border border-white/10 bg-[#0f0f0f] px-4 py-3 text-sm text-white placeholder:text-white/30 [color-scheme:dark] focus:border-red-500/60 focus:outline-none focus:ring-1 focus:ring-red-500/40';
+
+const Field = ({ label, error, children }) => (
+  <label className="block space-y-2">
+    <span className={`${mono} block text-[9px] text-white/50`}>{label}</span>
+    {children}
+    {error && <span className="block text-xs font-semibold text-red-400">{error}</span>}
+  </label>
+);
+
+const Step = ({ n, title, sub, children }) => (
+  <section className="space-y-5 rounded-xl border border-white/[0.07] bg-[#161616] p-6 md:p-8">
+    <div className="flex items-start gap-4 border-b border-white/5 pb-5">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] font-mono text-sm font-bold text-red-500">{n}</span>
+      <div>
+        <h2 className="text-lg font-bold">{title}</h2>
+        {sub && <p className="mt-0.5 text-xs text-white/50">{sub}</p>}
+      </div>
+    </div>
+    {children}
+  </section>
+);
+
+const Chip = ({ on, onClick, children }) => (
+  <div
+    role="checkbox"
+    aria-checked={on}
+    tabIndex={0}
+    onClick={onClick}
+    onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); onClick(); } }}
+    className={`cursor-pointer rounded-xl border p-4 transition-colors ${
+      on ? 'border-red-500/60 bg-[linear-gradient(135deg,#240607,#161616_60%)]' : 'border-white/10 bg-white/[0.02] hover:border-white/25'
+    }`}
+  >
+    {children}
+  </div>
+);
 
 export default function NRequestService() {
   const [params] = useSearchParams();
@@ -62,41 +104,52 @@ export default function NRequestService() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFBF00] text-black font-sans selection:bg-black selection:text-[#FFBF00]">
+    <div className="min-h-screen bg-[#0a0a0a] font-sans text-white antialiased selection:bg-red-600 selection:text-white">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-          <div className="inline-flex items-center gap-2 bg-black text-[#FFBF00] text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4">
-            <span className="w-2 h-2 rounded-full bg-[#FFBF00] animate-ping" /> REQUEST A SERVICE
-          </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tight leading-none mb-4">
-            COMMISSION <br /><span className="bg-black text-[#FFBF00] px-3 py-0.5 inline-block my-1 rounded">STONOVAH</span> <br />PRODUCTION & SERVICES
-          </h1>
-          <p className="text-xs md:text-sm text-black/85 font-medium max-w-2xl leading-relaxed">Tell us what you need and when. We review every request and reply to you by email.</p>
-        </motion.section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <form onSubmit={onSubmit} noValidate className="lg:col-span-2 space-y-8 relative">
+      <section className="relative overflow-hidden border-b border-white/5 bg-[radial-gradient(ellipse_at_top_left,rgba(225,6,19,0.18),transparent_55%)]">
+        <div className="mx-auto max-w-7xl px-5 pb-14 pt-14">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <span className="inline-flex items-center gap-2 rounded border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white/70">
+              <span className="h-1.5 w-1.5 animate-ping rounded-full bg-red-500" /> Request a service
+            </span>
+            <h1 className="mt-6 text-4xl font-black uppercase leading-[0.95] tracking-tight md:text-6xl lg:text-7xl">
+              Commission <br /><span className="text-red-500">Stonovah</span> <br />production & services
+            </h1>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/65">
+              Tell us what you need and when. We review every request and reply to you by email.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-7xl px-5 py-14">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <form onSubmit={onSubmit} noValidate className="relative space-y-6 lg:col-span-2">
             <input {...trapProps} />
 
             <Step n="01" title="Select services" sub="Choose everything you need.">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {SERVICES.map(([id, title, desc]) => {
                   const on = f.services.includes(id);
                   return (
                     <Chip key={id} on={on} onClick={() => toggle(id)}>
-                      <div className="flex justify-between items-center mb-2"><b className="text-sm uppercase">{title}</b>
-                        <span className={`w-5 h-5 rounded flex items-center justify-center border text-xs ${on ? 'bg-black text-[#FFBF00] border-black' : 'border-neutral-700 bg-neutral-800'}`}>{on && <FiCheck />}</span></div>
-                      <p className="text-xs leading-relaxed opacity-90">{desc}</p>
+                      <div className="mb-2 flex items-center justify-between">
+                        <b className="text-sm uppercase tracking-wide">{title}</b>
+                        <span className={`flex h-5 w-5 items-center justify-center rounded border text-xs ${on ? 'border-red-500 bg-red-500 text-white' : 'border-white/20 bg-white/[0.04]'}`}>
+                          {on && <FiCheck />}
+                        </span>
+                      </div>
+                      <p className="text-xs leading-relaxed text-white/55">{desc}</p>
                     </Chip>
                   );
                 })}
               </div>
-              {show('services') && <p className="text-xs text-red-400">{show('services')}</p>}
+              {show('services') && <p className="text-xs font-semibold text-red-400">{show('services')}</p>}
             </Step>
 
             <Step n="02" title="Contact details">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field label="Full name *" error={show('name')}><input autoComplete="name" maxLength={120} value={f.name} onChange={set('name')} className={inputCls} /></Field>
                 <Field label="Email *" error={show('email')}><input type="email" autoComplete="email" value={f.email} onChange={set('email')} className={inputCls} /></Field>
                 <Field label="Phone *" error={show('phone')}><input type="tel" autoComplete="tel" maxLength={25} value={f.phone} onChange={set('phone')} placeholder="+234 …" className={inputCls} /></Field>
@@ -105,12 +158,19 @@ export default function NRequestService() {
             </Step>
 
             <Step n="03" title="Event details">
-              <Field label="Event or project title *" error={show('title')}><input maxLength={160} value={f.title} onChange={set('title')} className={`${inputCls} font-bold text-[#FFBF00]`} /></Field>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Event or project title *" error={show('title')}>
+                <input maxLength={160} value={f.title} onChange={set('title')} className={`${inputCls} font-bold`} />
+              </Field>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field label="Event type *" error={show('category')}>
-                  <select value={f.category} onChange={set('category')} className={inputCls}><option value="">Select…</option>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select>
+                  <select value={f.category} onChange={set('category')} className={inputCls}>
+                    <option value="">Select…</option>
+                    {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                  </select>
                 </Field>
-                <Field label="Target date *" error={show('date')}><input type="date" min={today()} value={f.date} onChange={set('date')} className={inputCls} /></Field>
+                <Field label="Target date *" error={show('date')}>
+                  <input type="date" min={today()} value={f.date} onChange={set('date')} className={inputCls} />
+                </Field>
                 <Field label="Venue or city *" error={show('location')}>
                   <input list="cities" maxLength={200} value={f.location} onChange={set('location')} placeholder="e.g. Eko Convention Centre, Lagos" className={inputCls} />
                   <datalist id="cities">{['Lagos', 'Abuja', 'Port Harcourt', 'Accra', 'London'].map((c) => <option key={c} value={c} />)}</datalist>
@@ -119,32 +179,51 @@ export default function NRequestService() {
                   <input inputMode="numeric" value={f.audience} onChange={(e) => setF((x) => ({ ...x, audience: e.target.value.replace(/\D/g, '') }))} placeholder="e.g. 2500" className={inputCls} />
                 </Field>
               </div>
-              <Field label="Budget (optional)"><select value={f.budget} onChange={set('budget')} className={inputCls}><option value="">Select…</option>{BUDGETS.map((b) => <option key={b}>{b}</option>)}</select></Field>
-              <Field label="Project brief"><textarea rows={4} maxLength={4000} value={f.brief} onChange={set('brief')} placeholder="Stage size, streaming needs, press restrictions, anything we should know…" className={inputCls} /></Field>
+              <Field label="Budget (optional)">
+                <select value={f.budget} onChange={set('budget')} className={inputCls}>
+                  <option value="">Select…</option>
+                  {BUDGETS.map((b) => <option key={b}>{b}</option>)}
+                </select>
+              </Field>
+              <Field label="Project brief">
+                <textarea rows={4} maxLength={4000} value={f.brief} onChange={set('brief')} placeholder="Stage size, streaming needs, press restrictions, anything we should know…" className={inputCls} />
+              </Field>
               <AttachmentPicker files={files} onChange={setFiles} />
             </Step>
 
-            {error && <p className="text-xs font-bold text-red-100 bg-red-900 rounded-xl p-3">{error}</p>}
-            {touched && !valid && <p className="text-xs font-bold text-black bg-black/10 rounded-xl p-3">Please fix the highlighted fields.</p>}
-            <button type="submit" disabled={busy} className="w-full bg-black text-[#FFBF00] hover:bg-neutral-900 font-black text-xs md:text-sm py-4 px-6 rounded-xl uppercase tracking-widest transition shadow-2xl flex items-center justify-center gap-2 border-2 border-black disabled:opacity-60 cursor-pointer">
-              {busy ? 'Sending your request…' : <>Submit service request <FiArrowRight className="text-lg" /></>}
+            {error && <p className="rounded-lg border border-red-500/30 bg-red-500/[0.07] p-3 text-xs font-semibold text-red-200">{error}</p>}
+            {touched && !valid && <p className="rounded-lg border border-white/10 bg-white/[0.04] p-3 text-xs font-semibold text-white/70">Please fix the highlighted fields.</p>}
+
+            <button
+              type="submit"
+              disabled={busy}
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-[#e10613] px-6 py-4 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#c40510] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {busy ? 'Sending your request…' : <>Submit service request <FiArrowRight className="text-sm" /></>}
             </button>
           </form>
 
           <aside className="space-y-6">
-            <div className="bg-black text-white p-6 rounded-2xl shadow-2xl space-y-4 text-xs">
-              <span className="text-xs font-mono font-bold text-[#FFBF00] uppercase block border-b border-neutral-800 pb-3">What happens next</span>
+            <div className="space-y-4 rounded-xl border border-white/[0.07] bg-[radial-gradient(ellipse_at_top_right,rgba(225,6,19,0.14),#161616_60%)] p-6 text-xs">
+              <span className={`${mono} block border-b border-white/10 pb-3 text-red-400`}>What happens next</span>
               {[['We review it', 'Our team reads your request and checks availability.'], ['We reply by email', 'You hear from us at the address you give.'], ['You get a quote', 'We send a written quote you can accept or discuss.']].map(([t, d], i) => (
-                <div key={t} className="flex gap-3"><span className="w-6 h-6 rounded-full bg-[#FFBF00] text-black font-black flex items-center justify-center shrink-0">{i + 1}</span><div><b className="uppercase text-[11px] block">{t}</b><span className="text-neutral-400 text-[11px] leading-relaxed">{d}</span></div></div>
+                <div key={t} className="flex gap-3">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#e10613] text-[11px] font-black text-white">{i + 1}</span>
+                  <div>
+                    <b className="block text-[11px] uppercase tracking-wide">{t}</b>
+                    <span className="text-[11px] leading-relaxed text-white/50">{d}</span>
+                  </div>
+                </div>
               ))}
             </div>
-            <div className="bg-black text-white p-6 rounded-2xl shadow-2xl text-xs space-y-1">
-              <span className="text-[10px] font-mono text-neutral-400 uppercase block">PREFER TO WRITE?</span>
-              <a href="mailto:contact@stonovah.com" className="text-[#FFBF00] font-bold hover:underline">contact@stonovah.com</a>
+            <div className="space-y-1 rounded-xl border border-white/[0.07] bg-[#161616] p-6 text-xs">
+              <span className={`${mono} block text-[9px] text-white/40`}>Prefer to write?</span>
+              <a href="mailto:contact@stonovah.com" className="font-bold text-red-400 hover:text-red-300">contact@stonovah.com</a>
             </div>
           </aside>
         </div>
       </main>
+
       <Footer />
       <RequestSuccess done={done} onClose={reset} />
     </div>

@@ -10,8 +10,8 @@ export const fadeUp = {
 export const Card = ({ index = 0, className = '', hover = false, children, ...rest }) => (
   <motion.div
     custom={index} initial="hidden" animate="visible" variants={fadeUp}
-    whileHover={hover ? { y: -4 } : undefined}
-    className={`bg-black text-white rounded-2xl border border-black shadow-2xl font-mono ${className}`}
+    whileHover={hover ? { y: -3 } : undefined}
+    className={`rounded-xl border border-white/[0.07] bg-[#161616] text-white ${className}`}
     {...rest}
   >
     {children}
@@ -19,30 +19,30 @@ export const Card = ({ index = 0, className = '', hover = false, children, ...re
 );
 
 const tones = {
-  red: 'bg-red-600/20 text-red-300 border border-red-600/30',
-  green: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
-  amber: 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
-  grey: 'bg-neutral-800 text-neutral-300 border border-neutral-700',
-  solid: 'bg-red-600 text-white',
+  red: 'bg-red-600/15 text-red-300 border border-red-500/30',
+  green: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30',
+  amber: 'bg-amber-500/15 text-amber-300 border border-amber-500/30',
+  grey: 'bg-white/[0.06] text-white/70 border border-white/10',
+  solid: 'bg-[#e10613] text-white',
 };
 export const Pill = ({ tone = 'grey', className = '', children }) => (
-  <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${tones[tone]} ${className}`}>
+  <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider ${tones[tone]} ${className}`}>
     {children}
   </span>
 );
 
 const variants = {
-  primary: 'bg-red-600 hover:bg-red-700 text-white shadow-lg',
-  dark: 'bg-black hover:bg-neutral-800 text-white',
-  soft: 'bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-800',
-  outline: 'bg-black/10 hover:bg-black/20 text-black border border-black/30',
+  primary: 'bg-[#e10613] hover:bg-[#c40510] text-white',
+  dark: 'bg-white/[0.07] hover:bg-white/[0.12] text-white',
+  soft: 'bg-white/[0.04] hover:bg-white/[0.08] text-white border border-white/10',
+  outline: 'bg-white/[0.03] hover:border-white/30 text-white border border-white/15',
 };
 export const Btn = ({ variant = 'primary', className = '', disabled, ...p }) => (
   <motion.button
-    whileHover={disabled ? undefined : { scale: 1.03 }}
+    whileHover={disabled ? undefined : { scale: 1.02 }}
     whileTap={disabled ? undefined : { scale: 0.97 }}
     disabled={disabled}
-    className={`${variants[variant]} font-mono font-bold text-xs px-4 py-2.5 rounded-xl inline-flex items-center justify-center gap-2 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+    className={`${variants[variant]} inline-flex cursor-pointer items-center justify-center gap-2 rounded-md px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     {...p}
   />
 );
@@ -50,17 +50,18 @@ export const Btn = ({ variant = 'primary', className = '', disabled, ...p }) => 
 export function PageHeader({ eyebrow, title, desc, children }) {
   return (
     <motion.div initial="hidden" animate="visible" variants={fadeUp}
-      className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-      <div className="space-y-2 min-w-0">
+      className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+      <div className="min-w-0 space-y-2">
         {eyebrow && (
-          <span className="inline-block bg-black text-red-400 text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded">
+          <p className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-red-500">
+            <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
             {eyebrow}
-          </span>
+          </p>
         )}
-        <h1 className="text-3xl md:text-5xl font-black tracking-tight font-sans">{title}</h1>
-        {desc && <p className="text-xs md:text-sm font-mono text-black/80 max-w-2xl leading-relaxed">{desc}</p>}
+        <h1 className="text-3xl font-black tracking-tight md:text-4xl">{title}</h1>
+        {desc && <p className="max-w-2xl text-sm leading-relaxed text-white/55">{desc}</p>}
       </div>
-      {children && <div className="flex flex-wrap items-center gap-2 shrink-0">{children}</div>}
+      {children && <div className="flex shrink-0 flex-wrap items-center gap-2">{children}</div>}
     </motion.div>
   );
 }
@@ -82,7 +83,7 @@ export function Modal({ open, onClose, width = 'max-w-3xl', children }) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 bg-black/75 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-sm"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           onMouseDown={(e) => e.target === e.currentTarget && onClose()}
         >
@@ -90,11 +91,11 @@ export function Modal({ open, onClose, width = 'max-w-3xl', children }) {
             role="dialog" aria-modal="true"
             initial={{ opacity: 0, y: 30, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.97 }} transition={{ duration: 0.25 }}
-            className={`relative w-full ${width} my-8 bg-neutral-900 text-white rounded-2xl border border-neutral-800 shadow-2xl font-mono overflow-hidden`}
+            className={`relative my-8 w-full ${width} overflow-hidden rounded-xl border border-white/10 bg-[#161616] text-white shadow-2xl`}
           >
-            <div className="h-1 bg-red-600" />
+            <div className="h-1 bg-[#e10613]" />
             <button type="button" onClick={onClose} aria-label="Close"
-              className="absolute top-5 right-5 w-8 h-8 rounded-lg bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center cursor-pointer">
+              className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-white/[0.07] transition-colors hover:bg-white/[0.14]">
               <FiX />
             </button>
             {children}
@@ -122,7 +123,7 @@ export function CountUp({ value, prefix = '', suffix = '', decimals = 0 }) {
 
 export function Img({ src, alt = '', className = '' }) {
   const [bad, setBad] = useState(false);
-  return bad ? <div className={`${className} bg-neutral-800`} /> :
+  return bad ? <div className={`${className} bg-white/[0.06]`} /> :
     <img src={src} alt={alt} className={className} onError={() => setBad(true)} />;
 }
 
@@ -135,8 +136,8 @@ export function useNow(ms = 60000) {
   return n;
 }
 
-export const Bar = ({ percent, color = 'bg-red-600' }) => (
-  <div className="w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+export const Bar = ({ percent, color = 'bg-[#e10613]' }) => (
+  <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
     <motion.div className={`h-full ${color}`} initial={{ width: 0 }}
       animate={{ width: `${Math.min(100, percent)}%` }} transition={{ duration: 0.8, ease: 'easeOut' }} />
   </div>

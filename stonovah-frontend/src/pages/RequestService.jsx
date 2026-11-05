@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { FiArrowRight, FiCheck, FiChevronRight } from 'react-icons/fi';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
-import { Field, Step, Chip, AttachmentPicker, RequestSuccess, useRequestSubmit, emailOk, today, inputCls } from '../components/forms/RequestForm';
+import { AttachmentPicker, RequestSuccess, useRequestSubmit, emailOk, today } from '../components/forms/RequestForm';
 
 const TIERS = [
   ['Full Event Coordination', 'End-to-end stage direction, rigging, vendor procurement, VIP logistics and ground operations.'],
@@ -26,6 +26,49 @@ const VENUES = ['Convention centre', 'Stadium / arena', 'Outdoor site', 'Other']
 const AUDIENCE = ['Under 1,000', '1,000 – 5,000', '5,000 – 15,000', '15,000+'];
 const BUDGETS = ['$20K – $50K', '$50K – $150K', '$150K – $350K', '$350K+', 'Not sure yet'];
 const empty = { tier: TIERS[0][0], name: '', org: '', email: '', phone: '', region: '', title: '', date: '', duration: '', modules: [], venueType: '', venueName: '', city: '', audience: '', exact: '', budget: '', notes: '' };
+
+const mono = 'font-mono text-[10px] font-bold uppercase tracking-[0.18em]';
+
+// Local dark-styled form pieces (the shared ones in RequestForm are styled for the old yellow theme).
+const inputCls =
+  'w-full rounded-lg border border-white/10 bg-[#0f0f0f] px-4 py-3 text-sm text-white placeholder:text-white/30 [color-scheme:dark] focus:border-red-500/60 focus:outline-none focus:ring-1 focus:ring-red-500/40';
+
+const Field = ({ label, error, children }) => (
+  <label className="block space-y-2">
+    <span className={`${mono} block text-[9px] text-white/50`}>{label}</span>
+    {children}
+    {error && <span className="block text-xs font-semibold text-red-400">{error}</span>}
+  </label>
+);
+
+const Step = ({ n, title, sub, children }) => (
+  <section className="space-y-5 rounded-xl border border-white/[0.07] bg-[#161616] p-6 md:p-8">
+    <div className="flex items-start gap-4 border-b border-white/5 pb-5">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] font-mono text-sm font-bold text-red-500">{n}</span>
+      <div>
+        <h2 className="text-lg font-bold">{title}</h2>
+        {sub && <p className="mt-0.5 text-xs text-white/50">{sub}</p>}
+      </div>
+    </div>
+    {children}
+  </section>
+);
+
+// className controls padding and layout (defaults to p-4).
+const Chip = ({ on, onClick, className = 'p-4', children }) => (
+  <div
+    role="checkbox"
+    aria-checked={on}
+    tabIndex={0}
+    onClick={onClick}
+    onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); onClick(); } }}
+    className={`cursor-pointer rounded-xl border transition-colors ${
+      on ? 'border-red-500/60 bg-[linear-gradient(135deg,#240607,#161616_60%)]' : 'border-white/10 bg-white/[0.02] hover:border-white/25'
+    } ${className}`}
+  >
+    {children}
+  </div>
+);
 
 export default function RequestService() {
   const [f, setF] = useState(empty);
@@ -53,7 +96,7 @@ export default function RequestService() {
   };
   const valid = !Object.values(errs).some(Boolean);
   const show = (k) => (touched ? errs[k] : '');
-  const err = (k) => show(k) && <p className="text-xs text-red-400 mt-2">{show(k)}</p>;
+  const err = (k) => show(k) && <p className="text-xs font-semibold text-red-400">{show(k)}</p>;
 
   useEffect(() => { if (done) { setF(empty); setFiles([]); setTouched(false); } }, [done]);
 
@@ -80,33 +123,43 @@ export default function RequestService() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FFBF00] text-black font-sans selection:bg-black selection:text-[#FFBF00]">
+    <main className="min-h-screen bg-[#0a0a0a] font-sans text-white antialiased selection:bg-red-600 selection:text-white">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-        <div className="text-[10px] font-mono font-bold text-black/70 mb-4 flex items-center gap-2 uppercase tracking-widest">
-          <span>PORTAL</span><FiChevronRight /><span>EVENTS DIVISION</span><FiChevronRight /><span className="text-black font-extrabold">COMMISSION FORM</span>
-        </div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-none mb-3">COMMISSION STONOVAH <br /><span className="bg-black text-[#FFBF00] px-3 py-0.5 inline-block my-1 rounded">EVENT COORDINATION</span></h1>
-          <p className="text-xs md:text-sm text-black/80 font-semibold max-w-3xl">Describe your event and the support you need. We review every request and reply by email.</p>
-        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <form onSubmit={onSubmit} noValidate className="lg:col-span-2 space-y-8 relative">
+      <section className="relative overflow-hidden border-b border-white/5 bg-[radial-gradient(ellipse_at_top_left,rgba(225,6,19,0.18),transparent_55%)]">
+        <div className="mx-auto max-w-7xl px-5 pb-12 pt-8">
+          <div className={`${mono} mb-8 flex items-center gap-2 text-white/40`}>
+            <span>Portal</span><FiChevronRight /><span>Events division</span><FiChevronRight /><span className="text-white/70">Commission form</span>
+          </div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <h1 className="text-3xl font-black uppercase leading-[0.95] tracking-tight md:text-5xl lg:text-6xl">
+              Commission Stonovah <br /><span className="text-red-500">event coordination</span>
+            </h1>
+            <p className="mt-5 max-w-3xl text-base leading-relaxed text-white/65">
+              Describe your event and the support you need. We review every request and reply by email.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-7xl px-5 py-14">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <form onSubmit={onSubmit} noValidate className="relative space-y-6 lg:col-span-2">
             <input {...trapProps} />
 
             <Step n="01" title="What do you need?">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {TIERS.map(([t, d]) => (
                   <Chip key={t} on={f.tier === t} onClick={() => pick('tier', t)}>
-                    <b className="text-sm uppercase block mb-2">{t}</b><p className="text-xs leading-relaxed opacity-90">{d}</p>
+                    <b className="mb-2 block text-sm uppercase tracking-wide">{t}</b>
+                    <p className="text-xs leading-relaxed text-white/55">{d}</p>
                   </Chip>
                 ))}
               </div>
             </Step>
 
             <Step n="02" title="Contact & organization">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field label="Contact person *" error={show('name')}><input autoComplete="name" maxLength={120} value={f.name} onChange={set('name')} className={inputCls} /></Field>
                 <Field label="Organization / brand *" error={show('org')}><input autoComplete="organization" maxLength={160} value={f.org} onChange={set('org')} className={inputCls} /></Field>
                 <Field label="Email *" error={show('email')}><input type="email" autoComplete="email" value={f.email} onChange={set('email')} className={inputCls} /></Field>
@@ -116,21 +169,28 @@ export default function RequestService() {
             </Step>
 
             <Step n="03" title="Event details">
-              <Field label="Event title *" error={show('title')}><input maxLength={160} value={f.title} onChange={set('title')} className={`${inputCls} font-bold text-[#FFBF00]`} /></Field>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Event title *" error={show('title')}>
+                <input maxLength={160} value={f.title} onChange={set('title')} className={`${inputCls} font-bold`} />
+              </Field>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field label="Event date *" error={show('date')}><input type="date" min={today()} value={f.date} onChange={set('date')} className={inputCls} /></Field>
                 <Field label="Production duration (optional)"><input maxLength={80} value={f.duration} onChange={set('duration')} placeholder="e.g. 14 hours, 10:00 – 24:00" className={inputCls} /></Field>
               </div>
             </Step>
 
             <Step n="04" title="What should we handle?" sub="Select all that apply.">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {MODULES.map(([t, d]) => {
                   const on = f.modules.includes(t);
                   return (
-                    <Chip key={t} on={on} onClick={() => toggle(t)} className="flex items-start gap-3 !p-4">
-                      <span className={`mt-0.5 w-5 h-5 rounded flex items-center justify-center border text-xs shrink-0 ${on ? 'bg-black text-[#FFBF00] border-black' : 'border-neutral-600 bg-neutral-800'}`}>{on && <FiCheck />}</span>
-                      <span><b className="text-xs uppercase block mb-0.5">{t}</b><span className="text-[11px] opacity-80 leading-tight block">{d}</span></span>
+                    <Chip key={t} on={on} onClick={() => toggle(t)} className="flex items-start gap-3 p-4">
+                      <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border text-xs ${on ? 'border-red-500 bg-red-500 text-white' : 'border-white/20 bg-white/[0.04]'}`}>
+                        {on && <FiCheck />}
+                      </span>
+                      <span>
+                        <b className="mb-0.5 block text-xs uppercase tracking-wide">{t}</b>
+                        <span className="block text-[11px] leading-tight text-white/50">{d}</span>
+                      </span>
                     </Chip>
                   );
                 })}
@@ -139,56 +199,86 @@ export default function RequestService() {
             </Step>
 
             <Step n="05" title="Venue">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {VENUES.map((v) => <Chip key={v} on={f.venueType === v} onClick={() => pick('venueType', v)} className="!p-3 text-center text-xs font-bold uppercase">{v}</Chip>)}
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                {VENUES.map((v) => (
+                  <Chip key={v} on={f.venueType === v} onClick={() => pick('venueType', v)} className="p-3 text-center text-xs font-bold uppercase tracking-wide">{v}</Chip>
+                ))}
               </div>
               {err('venueType')}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field label="Venue name *" error={show('venueName')}><input maxLength={120} value={f.venueName} onChange={set('venueName')} className={inputCls} /></Field>
                 <Field label="City *" error={show('city')}><input maxLength={80} value={f.city} onChange={set('city')} className={inputCls} /></Field>
               </div>
             </Step>
 
             <Step n="06" title="Audience & budget">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {AUDIENCE.map((a) => <Chip key={a} on={f.audience === a} onClick={() => pick('audience', a)} className="!p-4 text-center font-black text-sm uppercase">{a}</Chip>)}
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                {AUDIENCE.map((a) => (
+                  <Chip key={a} on={f.audience === a} onClick={() => pick('audience', a)} className="p-4 text-center text-sm font-black uppercase">{a}</Chip>
+                ))}
               </div>
               {err('audience')}
-              <Field label="Exact expected attendance (optional)" error={show('exact')}><input inputMode="numeric" value={f.exact} onChange={(e) => pick('exact', e.target.value.replace(/\D/g, ''))} className={inputCls} /></Field>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {BUDGETS.map((b) => <Chip key={b} on={f.budget === b} onClick={() => pick('budget', b)} className="!p-3 text-center text-[11px] font-black uppercase">{b} {b.startsWith('$') && 'USD'}</Chip>)}
+              <Field label="Exact expected attendance (optional)" error={show('exact')}>
+                <input inputMode="numeric" value={f.exact} onChange={(e) => pick('exact', e.target.value.replace(/\D/g, ''))} className={inputCls} />
+              </Field>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+                {BUDGETS.map((b) => (
+                  <Chip key={b} on={f.budget === b} onClick={() => pick('budget', b)} className="p-3 text-center text-[11px] font-black uppercase">
+                    {b} {b.startsWith('$') && 'USD'}
+                  </Chip>
+                ))}
               </div>
               {err('budget')}
-              <Field label="Anything else we should know?"><textarea rows={3} maxLength={4000} value={f.notes} onChange={set('notes')} className={inputCls} /></Field>
+              <Field label="Anything else we should know?">
+                <textarea rows={3} maxLength={4000} value={f.notes} onChange={set('notes')} className={inputCls} />
+              </Field>
               <AttachmentPicker files={files} onChange={setFiles} />
             </Step>
 
-            {error && <p className="text-xs font-bold text-red-100 bg-red-900 rounded-xl p-3">{error}</p>}
-            {touched && !valid && <p className="text-xs font-bold text-black bg-black/10 rounded-xl p-3">Please fix the highlighted fields.</p>}
-            <button type="submit" disabled={busy} className="w-full bg-black text-[#FFBF00] hover:bg-neutral-900 font-black text-sm md:text-base py-5 rounded-2xl uppercase tracking-widest transition shadow-2xl flex items-center justify-center gap-3 border-2 border-black disabled:opacity-60 cursor-pointer">
-              {busy ? 'Sending your request…' : <>Submit commission request <FiArrowRight className="text-lg" /></>}
+            {error && <p className="rounded-lg border border-red-500/30 bg-red-500/[0.07] p-3 text-xs font-semibold text-red-200">{error}</p>}
+            {touched && !valid && <p className="rounded-lg border border-white/10 bg-white/[0.04] p-3 text-xs font-semibold text-white/70">Please fix the highlighted fields.</p>}
+
+            <button
+              type="submit"
+              disabled={busy}
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-[#e10613] px-6 py-4 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#c40510] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {busy ? 'Sending your request…' : <>Submit commission request <FiArrowRight className="text-sm" /></>}
             </button>
           </form>
 
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
-              <div className="bg-black text-white p-6 rounded-2xl shadow-2xl text-xs font-mono space-y-3">
-                <h3 className="font-black text-[#FFBF00] uppercase tracking-widest border-b border-neutral-800 pb-3">Your request so far</h3>
+              <div className="space-y-3 rounded-xl border border-white/[0.07] bg-[radial-gradient(ellipse_at_top_right,rgba(225,6,19,0.14),#161616_60%)] p-6 text-xs">
+                <h3 className={`${mono} border-b border-white/10 pb-3 text-red-400`}>Your request so far</h3>
                 {[['Service', f.tier], ['Venue', [f.venueType, f.venueName, f.city].filter(Boolean).join(' • ')], ['Audience', f.exact ? `${Number(f.exact).toLocaleString()} people` : f.audience], ['Budget', f.budget]].map(([k, v]) => (
-                  <div key={k}><span className="text-neutral-400 text-[10px] uppercase block">{k}</span><span className="font-bold block mt-0.5">{v || '—'}</span></div>
+                  <div key={k}>
+                    <span className={`${mono} block text-[9px] text-white/40`}>{k}</span>
+                    <span className="mt-0.5 block font-bold">{v || '—'}</span>
+                  </div>
                 ))}
-                <div className="border-t border-neutral-800 pt-3"><span className="text-neutral-400 text-[10px] uppercase block mb-2">We will handle</span>
-                  <div className="flex flex-wrap gap-1.5">{f.modules.length ? f.modules.map((m) => <span key={m} className="bg-neutral-800 text-[#FFBF00] text-[9px] px-2 py-1 rounded border border-neutral-700 uppercase font-bold">{m}</span>) : <span className="text-neutral-500">Nothing selected yet</span>}</div></div>
-                <p className="text-[10px] text-neutral-500 pt-2">Nothing is sent until you submit.</p>
+                <div className="border-t border-white/10 pt-3">
+                  <span className={`${mono} mb-2 block text-[9px] text-white/40`}>We will handle</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {f.modules.length
+                      ? f.modules.map((m) => (
+                          <span key={m} className="rounded border border-white/10 bg-white/[0.05] px-2 py-1 font-mono text-[9px] font-bold uppercase text-white/80">{m}</span>
+                        ))
+                      : <span className="text-white/40">Nothing selected yet</span>}
+                  </div>
+                </div>
+                <p className="pt-2 text-[10px] text-white/40">Nothing is sent until you submit.</p>
               </div>
-              <div className="bg-black text-white p-6 rounded-2xl shadow-xl text-xs space-y-1">
-                <span className="text-[10px] font-mono text-neutral-400 uppercase block">PREFER TO WRITE?</span>
-                <a href="mailto:contact@stonovah.com" className="text-[#FFBF00] font-bold hover:underline">contact@stonovah.com</a>
+
+              <div className="space-y-1 rounded-xl border border-white/[0.07] bg-[#161616] p-6 text-xs">
+                <span className={`${mono} block text-[9px] text-white/40`}>Prefer to write?</span>
+                <a href="mailto:contact@stonovah.com" className="font-bold text-red-400 hover:text-red-300">contact@stonovah.com</a>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <Footer />
       <RequestSuccess done={done} onClose={reset} />
     </main>

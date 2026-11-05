@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { FiArrowLeft, FiEyeOff, FiEye, FiDownload, FiSearch } from 'react-icons/fi';
 import { Card, Pill, Btn, Bar, CountUp } from '../ui';
-import { Pagination } from '../ui2';
+import { Pagination, Select } from '../ui2';
 import { adminApi } from '../../../api/admin';
 import { apiErrorMessage } from '../../../api/apiClient';
 import { useLoad, ErrorLine, ConfirmModal } from '../adminBits';
@@ -92,7 +92,17 @@ export default function EventDetail() {
         <div><h2 className="text-xl font-black font-sans">Attendees</h2><p className="text-[11px] text-neutral-400">Every ticket issued for this event.</p></div>
         <div className="flex flex-col md:flex-row gap-2">
           <div className="relative flex-1"><FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" /><input value={q} onChange={(x) => { setQ(x.target.value); setPage(1); }} placeholder="Search by name, email, ticket code or order…" className={`${sel} w-full pl-9`} /></div>
-          <select value={status} onChange={(x) => { setStatus(x.target.value); setPage(1); }} className={sel}><option value="">All tickets</option><option value="VALID">Not yet scanned</option><option value="USED">Checked in</option><option value="VOID">Cancelled</option></select>
+          <Select
+            className="w-48"
+            value={status}
+            onChange={(v) => { setStatus(v); setPage(1); }}
+            options={[
+              { value: '', label: 'All tickets' },
+              { value: 'VALID', label: 'Not yet scanned' },
+              { value: 'USED', label: 'Checked in' },
+              { value: 'VOID', label: 'Cancelled' },
+            ]}
+          />
         </div>
         <ErrorLine>{att.error}</ErrorLine>
         <div className="overflow-x-auto"><table className="w-full text-xs min-w-[760px]">

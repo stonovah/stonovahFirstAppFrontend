@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FiSearch, FiDownload, FiChevronDown, FiRefreshCw } from 'react-icons/fi';
 import { Card, Pill, Btn, PageHeader, Img, Bar, CountUp } from '../ui';
-import { Pagination } from '../ui2';
+import { Pagination, Select } from '../ui2';
 import { downloadCsv } from '../adminData';
 import { adminApi } from '../../../api/admin';
 import { apiErrorMessage } from '../../../api/apiClient';
@@ -75,8 +75,26 @@ export default function AllEvents() {
                 <div className="flex justify-between pt-2"><button type="button" onClick={() => setStaged(ALL)} className="text-xs text-neutral-300 hover:text-white cursor-pointer">Reset</button><Btn className="py-1.5" onClick={() => { setStatuses(staged.length ? staged : ALL); setOpen(false); }}>Apply</Btn></div>
               </motion.div></>)}
           </div>
-          <select value={when} onChange={(e) => setWhen(e.target.value)} className={sel}><option value="">Date: All</option><option value="upcoming">Upcoming</option><option value="past">Past</option></select>
-          <select value={type} onChange={(e) => setType(e.target.value)} className={sel}><option value="">Type: Free & Paid</option><option value="paid">Paid</option><option value="free">Free</option></select>
+          <Select
+            className="w-44"
+            value={when}
+            onChange={setWhen}
+            options={[
+              { value: '', label: 'Date: All' },
+              { value: 'upcoming', label: 'Upcoming' },
+              { value: 'past', label: 'Past' },
+            ]}
+          />
+          <Select
+            className="w-48"
+            value={type}
+            onChange={setType}
+            options={[
+              { value: '', label: 'Type: Free & Paid' },
+              { value: 'paid', label: 'Paid' },
+              { value: 'free', label: 'Free' },
+            ]}
+          />
           <button type="button" onClick={reset} className="ml-auto text-[10px] font-bold text-neutral-400 hover:text-white flex items-center gap-1 cursor-pointer"><FiRefreshCw /> CLEAR FILTERS</button>
         </div>
       </Card>

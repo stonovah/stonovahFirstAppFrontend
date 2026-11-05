@@ -1,4 +1,4 @@
-// src/lib/api.js — shared axios client (token in memory, cookie sent automatically)
+// src/api/apiClient.js — shared axios client (token in memory, cookie sent automatically)
 import axios from 'axios';
 
 let accessToken = null;
