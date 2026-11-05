@@ -274,7 +274,7 @@ function BudgetTab({ p, can, reload }) {
       </Card>
       {b.nextTranche && <Card className="border-l-4 border-l-amber-500 p-4 text-xs"><span className={`${mono} text-[9px] text-white/45`}>Next scheduled tranche</span><p className="mt-1"><b>{b.nextTranche.label}</b>: {ngn(b.nextTranche.amountKobo, true)}{b.nextTranche.trigger ? ` • ${b.nextTranche.trigger}` : ''}</p></Card>}
       <Card className="overflow-x-auto">
-        <table className="w-full min-w-[720px] text-left text-xs">
+        <table className="w-full min-w-180 text-left text-xs">
           <thead><tr className={`${mono} border-b border-white/10 text-[9px] text-white/40`}><th className="p-3">#</th><th className="p-3">Tranche</th><th className="p-3 text-right">Amount</th><th className="p-3">Status</th><th className="p-3">Bank reference</th><th className="p-3" /></tr></thead>
           <tbody>
             {b.tranches.map((t) => (

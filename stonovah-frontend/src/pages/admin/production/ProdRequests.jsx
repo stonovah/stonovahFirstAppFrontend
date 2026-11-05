@@ -74,7 +74,7 @@ export default function ProdRequests() {
       </div>
 
       <Card className="flex flex-col gap-3 p-3 lg:flex-row lg:flex-wrap lg:items-center">
-        <div className="relative min-w-[220px] flex-1"><FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" /><input value={q} onChange={(e) => { setQ(e.target.value); reset(); }} placeholder="Search reference, client, company, project…" className={`${inputCls} pl-9`} /></div>
+        <div className="relative min-w-55 flex-1"><FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" /><input value={q} onChange={(e) => { setQ(e.target.value); reset(); }} placeholder="Search reference, client, company, project…" className={`${inputCls} pl-9`} /></div>
         <Select className="lg:w-52" value={assigned} onChange={(v) => { setAssigned(v); reset(); }}
         options={[{ value: '', label: 'All producers' }, { value: 'unassigned', label: 'Unassigned' }, ...producerOptions]} />
         <Select className="lg:w-44" value={format} onChange={(v) => { setFormat(v); reset(); }}
@@ -105,7 +105,7 @@ export default function ProdRequests() {
       )}
 
       <Card className="overflow-x-auto">
-        <table className="w-full min-w-[1000px] text-left text-xs">
+        <table className="w-full min-w-250 text-left text-xs">
           <thead>
             <tr className={`${mono} border-b border-white/10 text-[9px] text-white/40`}>
               <th className="w-10 p-3">{can.write && <input type="checkbox" checked={allOn} onChange={() => setSel(allOn ? new Set() : new Set(rows.map((r) => r.id)))} className="accent-red-600" />}</th>
@@ -115,7 +115,7 @@ export default function ProdRequests() {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.id} onClick={() => navigate(`/admin/production/requests/${r.id}`)} className="cursor-pointer border-b border-white/5 align-top transition hover:bg-white/[0.04]">
+              <tr key={r.id} onClick={() => navigate(`/admin/production/requests/${r.id}`)} className="cursor-pointer border-b border-white/5 align-top transition hover:bg-white/4">
                 <td className="p-3" onClick={(e) => e.stopPropagation()}>{can.write && <input type="checkbox" checked={sel.has(r.id)} onChange={() => toggle(r.id)} className="accent-red-600" />}</td>
                 <td className="p-3">
                   <span className="flex items-center gap-2">{!r.readAt && <span className="h-2 w-2 rounded-full bg-red-500" title="Unread" />}<b className="font-mono">{r.reference}</b></span>

@@ -81,7 +81,7 @@ export default function ProdPast() {
       <Card className="space-y-3 p-3">
         <div className="flex flex-wrap gap-2">{TABS.map(([k, l, c]) => <button key={k} type="button" onClick={() => { setTab(k); reset(); }} className={`cursor-pointer rounded-lg px-3 py-2 text-xs font-bold transition ${tab === k ? 'bg-red-600' : 'bg-neutral-900 text-neutral-300 hover:bg-neutral-800'}`}>{l} ({counts[c] ?? 0})</button>)}</div>
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="relative min-w-[220px] flex-1"><FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" /><input value={q} onChange={(e) => { setQ(e.target.value); reset(); }} placeholder="Search title, client or slug…" className={`${inputCls} pl-9`} /></div>
+          <div className="relative min-w-55 flex-1"><FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" /><input value={q} onChange={(e) => { setQ(e.target.value); reset(); }} placeholder="Search title, client or slug…" className={`${inputCls} pl-9`} /></div>
           <Select className="lg:w-44" value={type} onChange={(v) => { setType(v); reset(); }} options={[{ value: '', label: 'All project types' }, ...FORMAT_OPTIONS]} />
           <Select className="lg:w-56" value={service} onChange={(v) => { setService(v); reset(); }} options={[{ value: '', label: 'All services' }, ...(svc.data?.data ?? []).map((x) => ({ value: x.id, label: x.name }))]} />
           <input value={year} onChange={(e) => { setYear(e.target.value.replace(/\D/g, '').slice(0, 4)); reset(); }} placeholder="Year" className={`${inputCls} lg:w-24`} />
